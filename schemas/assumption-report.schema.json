@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Sparths/Assumption-Forge/schemas/assumption-report.schema.json",
+  "title": "Assumption Forge Report",
+  "description": "A machine-readable report for hidden assumptions and planned tests.",
+  "type": "object",
+  "required": ["unit_under_test", "assumptions", "test_plan"],
+  "properties": {
+    "unit_under_test": {
+      "type": "object",
+      "required": ["name", "summary"],
+      "properties": {
+        "name": { "type": "string" },
+        "summary": { "type": "string" },
+        "language": { "type": "string" },
+        "path": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "statement", "evidence", "risk", "priority", "test_idea"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^A[0-9]+$" },
+          "statement": { "type": "string" },
+          "evidence": { "type": "string" },
+          "risk": { "type": "string" },
+          "priority": { "enum": ["High", "Medium", "Low"] },
+          "test_idea": { "type": "string" },
+          "recommended_test_type": {
+            "enum": ["Unit", "Integration", "Contract", "Property", "Regression", "Fuzz", "E2E"]
+          },
+          "uncertainty": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "test_plan": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "assumption_id", "type", "assertion", "failure_mode"],
+        "properties": {
+          "name": { "type": "string" },
+          "assumption_id": { "type": "string", "pattern": "^A[0-9]+$" },
+          "type": {
+            "enum": ["Unit", "Integration", "Contract", "Property", "Regression", "Fuzz", "E2E"]
+          },
+          "setup": { "type": "string" },
+          "assertion": { "type": "string" },
+          "failure_mode": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "gaps": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "self_review": {
+      "type": "object",
+      "properties": {
+        "named_assumptions": { "type": "boolean" },
+        "specific_assertions": { "type": "boolean" },
+        "minimal_mocking": { "type": "boolean" },
+        "deterministic": { "type": "boolean" },
+        "fake_confidence_risk": { "enum": ["Low", "Medium", "High"] }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
