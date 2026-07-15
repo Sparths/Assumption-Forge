@@ -1,0 +1,28 @@
+name: Markdown quality
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  markdown-quality:
+    name: Basic Markdown checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Reject trailing whitespace in Markdown
+        run: |
+          if git grep -n '[[:blank:]]$' -- '*.md'; then
+            echo "Trailing whitespace found in Markdown files."
+            exit 1
+          fi
+
+      - name: Reject placeholder TODOs in public docs
+        run: |
+          if git grep -nE 'TODO|TBD|lorem ipsum' -- '*.md'; then
+            echo "Placeholder text found in public Markdown files."
+            exit 1
+          fi
