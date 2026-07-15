@@ -1,0 +1,56 @@
+{
+  "unit_under_test": {
+    "name": "indexUsersById",
+    "summary": "Creates a lookup object from a list of users.",
+    "language": "TypeScript",
+    "path": "src/users.ts"
+  },
+  "assumptions": [
+    {
+      "id": "A1",
+      "statement": "User IDs are unique within the input list.",
+      "evidence": "The implementation stores users in an object by id, which overwrites duplicate keys.",
+      "risk": "Duplicate IDs can silently drop earlier users and produce incorrect lookup results.",
+      "priority": "High",
+      "test_idea": "Pass two users with the same id and assert explicit duplicate handling.",
+      "recommended_test_type": "Unit"
+    },
+    {
+      "id": "A2",
+      "statement": "User IDs are non-empty strings.",
+      "evidence": "The id is used directly as an object key without validation.",
+      "risk": "Empty IDs create ambiguous lookup behavior.",
+      "priority": "Medium",
+      "test_idea": "Pass an empty id and assert explicit rejection.",
+      "recommended_test_type": "Unit"
+    }
+  ],
+  "test_plan": [
+    {
+      "name": "does_not_silently_overwrite_duplicate_user_ids",
+      "assumption_id": "A1",
+      "type": "Unit",
+      "setup": "Create two users with the same id and different emails.",
+      "assertion": "The function throws or returns an explicit duplicate-id error.",
+      "failure_mode": "The implementation silently keeps only the second user."
+    },
+    {
+      "name": "rejects_empty_user_ids",
+      "assumption_id": "A2",
+      "type": "Unit",
+      "setup": "Create a user with an empty id.",
+      "assertion": "The function throws or returns an explicit invalid-id error.",
+      "failure_mode": "The implementation creates an empty-string lookup key."
+    }
+  ],
+  "gaps": [
+    "Product behavior must decide whether duplicate IDs are rejected, merged, or preserved as a list."
+  ],
+  "self_review": {
+    "named_assumptions": true,
+    "specific_assertions": true,
+    "minimal_mocking": true,
+    "deterministic": true,
+    "fake_confidence_risk": "Low"
+  }
+}
